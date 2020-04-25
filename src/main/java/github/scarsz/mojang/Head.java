@@ -64,13 +64,16 @@ public class Head {
     public static ItemStack create(UUID uuid, int amount) {
         ItemStack itemStack = CACHE.computeIfAbsent(uuid, t -> {
             try {
-                return createFromTexture(Mojang.fetch(uuid).getSkin(), amount);
+                return createFromTexture(Mojang.fetch(uuid).getSkin());
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
         });
-        if (itemStack != null) itemStack.setAmount(amount);
+        if (itemStack != null) {
+            itemStack = itemStack.clone();
+            itemStack.setAmount(amount);
+        }
         return itemStack;
     }
 
