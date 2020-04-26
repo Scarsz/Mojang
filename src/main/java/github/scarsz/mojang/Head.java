@@ -16,18 +16,27 @@ import java.util.UUID;
 @SuppressWarnings("unused")
 public class Head {
 
+    static {
+        ItemStack skull;
+        try {
+            skull = new ItemStack(Material.valueOf("PLAYER_HEAD"));
+        } catch (IllegalArgumentException e) {
+            //noinspection deprecation
+            skull = new ItemStack(Material.valueOf("SKULL_ITEM"), 1, (short) SkullType.PLAYER.ordinal());
+        }
+        PLAYER_SKULL_ITEM = skull;
+    }
+
+    private static final ItemStack PLAYER_SKULL_ITEM;
     private static final Map<UUID, ItemStack> CACHE = new HashMap<>();
 
     public static ItemStack getPlayerSkullItem() {
         return getPlayerSkullItem(1);
     }
     public static ItemStack getPlayerSkullItem(int amount) {
-        try {
-            return new ItemStack(Material.valueOf("PLAYER_HEAD"), amount);
-        } catch (IllegalArgumentException e) {
-            //noinspection deprecation
-            return new ItemStack(Material.valueOf("SKULL_ITEM"), amount, (short) SkullType.PLAYER.ordinal());
-        }
+        ItemStack itemStack = PLAYER_SKULL_ITEM.clone();
+        itemStack.setAmount(amount);
+        return itemStack;
     }
 
     public static ItemStack create(String playerName) {
