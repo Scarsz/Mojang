@@ -3,11 +3,9 @@ package github.scarsz.mojang;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.apache.commons.codec.binary.Base64;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.SkullType;
+import org.bukkit.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
@@ -64,7 +62,12 @@ public class Head {
     public static ItemStack create(UUID uuid, int amount) {
         ItemStack itemStack = CACHE.computeIfAbsent(uuid, t -> {
             try {
-                return createFromTexture(Mojang.fetch(uuid).getSkin());
+                Mojang.GameProfile profile = Mojang.fetch(uuid);
+                ItemStack item = createFromTexture(profile.getSkin());
+                ItemMeta meta = item.getItemMeta();
+                meta.setDisplayName(ChatColor.GOLD + profile.getName());
+                item.setItemMeta(meta);
+                return item;
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
