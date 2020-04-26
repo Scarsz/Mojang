@@ -65,7 +65,7 @@ public class Head {
                 Mojang.GameProfile profile = Mojang.fetch(uuid);
                 ItemStack item = createFromTexture(profile.getSkin());
                 ItemMeta meta = item.getItemMeta();
-                meta.setDisplayName(ChatColor.GOLD + profile.getName());
+                meta.setDisplayName(ChatColor.YELLOW + profile.getName());
                 item.setItemMeta(meta);
                 return item;
             } catch (Exception e) {
