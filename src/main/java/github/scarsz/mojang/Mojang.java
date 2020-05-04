@@ -22,6 +22,7 @@ public class Mojang {
     private static final ExpiringMap<UUID, GameProfile> profileCache = ExpiringMap.builder().variableExpiration().expiration(1, TimeUnit.DAYS).build();
 
     private static Connection connection = null;
+    private static String apiUrl = "https://api.ashcon.app/mojang/v2/user/{target}";
     private static String userAgent = "Mojang";
 
     public static void setDatabaseFile(File file) {
@@ -52,7 +53,12 @@ public class Mojang {
         Mojang.userAgent = userAgent;
     }
     public static void setExpiration(long duration, TimeUnit unit) {
-        profileCache.setExpiration(duration, unit);
+        Mojang.profileCache.setExpiration(duration, unit);
+    }
+    public static void setApiUrl(String apiUrl) {
+        if (!apiUrl.contains("{target}")) throw new IllegalArgumentException("Given API url doesn't contain {target} placeholder");
+
+        Mojang.apiUrl = apiUrl;
     }
 
     public static GameProfile fetch(UUID uuid) throws ProfileFetchException {
@@ -76,7 +82,7 @@ public class Mojang {
         if (targetUuid != null && profileCache.containsKey(targetUuid)) {
             return profileCache.get(targetUuid);
         } else {
-            HttpRequest request = HttpRequest.get("https://api.ashcon.app/mojang/v1/user/" + target);
+            HttpRequest request = HttpRequest.get(apiUrl.replace("{target}", target));
             request.userAgent(userAgent);
             int status = request.code();
             String body = request.body();
@@ -91,7 +97,8 @@ public class Mojang {
                             Map history = (Map) oHistory;
                             usernames.add((String) history.get("username"));
                         }
-                        String skin = ((String) ((Map) ((Map) response.get("textures")).get("skin")).get("url")).replaceFirst("https?://textures\\.minecraft\\.net/texture/", "");
+                        String skin = ((String) ((Map) ((Map) response.get("textures")).get("skin")).get("url"));
+                        skin = skin.substring(skin.lastIndexOf("/"));
                         GameProfile profile = new GameProfile(uuid, username, usernames, skin);
                         cache(profile);
                         return profile;
