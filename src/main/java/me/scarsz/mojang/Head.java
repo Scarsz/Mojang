@@ -1,4 +1,4 @@
-package github.scarsz.mojang;
+package me.scarsz.mojang;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;

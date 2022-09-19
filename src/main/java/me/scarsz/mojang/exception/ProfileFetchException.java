@@ -1,4 +1,4 @@
-package github.scarsz.mojang.exception;
+package me.scarsz.mojang.exception;
 
 public class ProfileFetchException extends Exception {
 

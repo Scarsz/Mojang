@@ -21,6 +21,6 @@ Head.create(OfflinePlayer);
 <dependency>
   <groupId>github.scarsz</groupId>
   <artifactId>mojang</artifactId>
-  <version>1.0</version>
+  <version>1.1.1</version>
 </dependency>
 ```

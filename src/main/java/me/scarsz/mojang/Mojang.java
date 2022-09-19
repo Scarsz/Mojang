@@ -1,9 +1,9 @@
-package github.scarsz.mojang;
+package me.scarsz.mojang;
 
 import com.github.kevinsawicki.http.HttpRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import github.scarsz.mojang.exception.ProfileFetchException;
+import me.scarsz.mojang.exception.ProfileFetchException;
 import net.jodah.expiringmap.ExpiringMap;
 
 import java.io.File;
