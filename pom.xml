@@ -6,12 +6,34 @@
 
     <groupId>github.scarsz</groupId>
     <artifactId>mojang</artifactId>
-    <version>1.1.1</version>
+    <version>1.2</version>
 
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <distributionManagement>
+        <repository>
+            <id>scarsz</id>
+            <url>https://nexus.scarsz.me/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>scarsz</id>
+            <url>https://nexus.scarsz.me/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>paper</id>
+            <url>https://papermc.io/repo/repository/maven-releases/</url>
+        </repository>
+    </repositories>
 
     <build>
         <defaultGoal>clean install</defaultGoal>
@@ -74,40 +96,34 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>paper</id>
-            <url>https://papermc.io/repo/repository/maven-releases/</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.19.2-R0.1-SNAPSHOT</version>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.20.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.mojang</groupId>
             <artifactId>authlib</artifactId>
-            <version>1.5.25</version>
-            <scope>provided</scope>
+            <version>5.0.47</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/authlib-5.0.47.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.15</version>
+            <version>1.16.0</version>
         </dependency>
         <dependency>
             <groupId>net.jodah</groupId>
             <artifactId>expiringmap</artifactId>
-            <version>0.5.10</version>
+            <version>0.5.11</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.9.0</version>
+            <version>2.10.1</version>
         </dependency>
         <dependency>
             <groupId>com.github.kevinsawicki</groupId>

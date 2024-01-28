@@ -7,8 +7,10 @@ import org.bukkit.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.profile.PlayerProfile;
 
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -25,8 +27,16 @@ public class Head {
             skull = new ItemStack(Material.valueOf("SKULL_ITEM"), 1, (short) SkullType.PLAYER.ordinal());
         }
         PLAYER_SKULL_ITEM = skull;
+
+        try {
+            Class.forName("org.bukkit.Bukkit").getMethod("createPlayerProfile", UUID.class);
+            MODERN_PROFILE_API = true;
+        } catch (Exception e) {
+            MODERN_PROFILE_API = false;
+        }
     }
 
+    private static boolean MODERN_PROFILE_API;
     private static final ItemStack PLAYER_SKULL_ITEM;
     private static final Map<UUID, ItemStack> CACHE = new HashMap<>();
 
@@ -93,32 +103,36 @@ public class Head {
         return createFromTexture(textureId, 1);
     }
     public static ItemStack createFromTexture(String textureId, int amount) {
-        String skin = "{\"textures\":{\"SKIN\":{\"url\":\"http://textures.minecraft.net/texture/" + textureId + "\"}}}";
-        String b64 = new String(Base64.encodeBase64(skin.getBytes()));
+        String url = "http://textures.minecraft.net/texture/" + textureId;
+        UUID uuid = UUID.nameUUIDFromBytes(textureId.getBytes());
+
+        ItemStack itemStack = getPlayerSkullItem(amount);
+        SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
+        if (meta == null) throw new RuntimeException("Skull ItemMeta is null");
 
         try {
-            ItemStack head = getPlayerSkullItem(amount);
-            SkullMeta meta = (SkullMeta) head.getItemMeta();
-            GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+            if (MODERN_PROFILE_API) {
+                PlayerProfile profile = Bukkit.createPlayerProfile(uuid);
+                profile.getTextures().setSkin(new URL(url));
+                meta.setOwnerProfile(profile);
+            } else {
+                GameProfile profile = new GameProfile(uuid, "");
 
-            // construct new textures property
-            Property property = new Property("textures", b64);
+                String skin = "{\"textures\":{\"SKIN\":{\"url\":\"" + url + "\"}}}";
+                String b64 = new String(Base64.encodeBase64(skin.getBytes()));
+                Property property = new Property("textures", b64);
+                profile.getProperties().put("textures", property);
 
-            // set profile's texture property to custom one
-            profile.getProperties().put("textures", property);
-
-            // set skull's profile field
-            assert meta != null;
-            Field profileField = meta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(meta, profile);
-
-            head.setItemMeta(meta);
-            return head;
+                Field profileField = meta.getClass().getDeclaredField("profile");
+                profileField.setAccessible(true);
+                profileField.set(meta, profile);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
+
+        itemStack.setItemMeta(meta);
+        return itemStack;
     }
 
 }
